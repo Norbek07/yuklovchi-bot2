@@ -129,8 +129,6 @@ async def main() -> None:
     global bot,db
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
     db = Database(path_to_db="main.db")
-    db.create_table_users()
-    db.create_table_audios()
     await set_default_commands(bot)
     await dp.start_polling(bot)
     setup_middlewares(dispatcher=dp, bot=bot)
