@@ -1,8 +1,9 @@
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart,Command
+from aiogram.utils.chat_action import ChatActionSender
 from aiogram import F
-from aiogram.types import Message,InlineKeyboardButton
+from aiogram.types import Message,InlineKeyboardButton,InputMediaPhoto,InputMediaVideo
 from data import config
 import asyncio
 import logging
@@ -16,6 +17,7 @@ from aiogram.fsm.context import FSMContext #new
 from states.reklama import Adverts
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import time 
+from instasaves import get_insta
 
 ADMINS = config.ADMINS
 TOKEN = config.BOT_TOKEN
@@ -32,9 +34,65 @@ async def start_command(message:Message):
     telegram_id = message.from_user.id
     try:
         db.add_user(full_name=full_name,telegram_id=telegram_id) #foydalanuvchi bazaga qo'shildi
-        await message.answer(text="Assalomu alaykum, botimizga hush kelibsiz")
+        await message.answer(text="Assalomu alaykum, Bu bot Instagram link orqali video va rasmlarni yuklab beradi.")
     except:
-        await message.answer(text="Assalomu alaykum")
+        await message.answer(text="Bu bot Instagram link orqali video va rasmlarni yuklab beradi.")
+#e22bb6f141mshb5df187325fcfe1p122f8djsn1231cff01bb2
+@dp.message(F.text)
+async def save_insta(message:Message):
+    link = message.text
+    natija = get_insta(link)
+
+    if natija.get("status"):
+        await bot.send_chat_action(chat_id=message.from_user.id,action="typing")
+        await message.answer(text="Yuborilyapti....")
+        if natija.get("result").get("is_video"):
+            await bot.send_chat_action(chat_id=message.from_user.id,action="upload_video")
+            video = natija.get("result").get("video_url")
+            caption = natija.get("result").get("caption")
+            if caption:
+                await message.answer_video(video=video,caption=caption)
+            else:
+                await message.answer_video(video=video)
+        elif natija.get("result").get("is_album"):
+            await bot.send_chat_action(chat_id=message.from_user.id,action="upload_document")
+            albom = natija.get("album")
+            print(albom)
+            media = []
+            caption = natija.get("result").get("caption")
+            for index,i in enumerate(albom):
+                if i.get("FileType") == 'image':
+                    if index == 0 and caption:
+
+                        media.append(InputMediaPhoto(media=i.get("url"),caption=caption))
+                    else:  
+                        media.append(InputMediaPhoto(media=i.get("url")))
+ 
+                else:
+                    if index == 0 and caption:
+
+                        media.append(InputMediaVideo(media=i.get("url"),caption=caption))
+                    else:  
+                        media.append(InputMediaVideo(media=i.get("url")))
+            
+            if caption:
+                await message.answer_media_group(media=media)
+            else:
+                await message.answer_media_group(media=media)
+
+        else:
+            await bot.send_chat_action(chat_id=message.from_user.id,action="upload_photo")
+            rasm = natija.get("result").get("image_url")
+            caption = natija.get("result").get("caption")
+            if caption:
+                await message.answer_photo(photo=rasm,caption=caption)
+            else:
+                await message.answer_photo(photo=rasm)
+            
+    elif natija.get("message").startswith("You have exceeded the MONTHLY quota"):
+        await message.answer(text="Tez orada ishga tushiramiz....")
+    else:
+        await message.answer(text="Notog'ri link yubordingiz, instagram saytidan link yuboring!")
 
 
 @dp.message(IsCheckSubChannels())
