@@ -1,4 +1,5 @@
 # Aiogram 3 New Template (SQLite db)
+![image](https://github.com/Sifat-IT-Academy/insta-save-bot/assets/48023644/b98d76c1-8b53-4c64-8f76-a93f7c94d816)
 
 ### 1. Create virtual environment and install packages
 Windows
