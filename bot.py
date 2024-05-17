@@ -37,7 +37,7 @@ async def start_command(message:Message):
         await message.answer(text="Assalomu alaykum, Bu bot Instagram link orqali video va rasmlarni yuklab beradi.")
     except:
         await message.answer(text="Bu bot Instagram link orqali video va rasmlarni yuklab beradi.")
-#e22bb6f141mshb5df187325fcfe1p122f8djsn1231cff01bb2
+
 @dp.message(F.text)
 async def save_insta(message:Message):
     link = message.text
@@ -108,14 +108,14 @@ async def kanalga_obuna(message:Message):
 
 
 
-#help commands
+
 @dp.message(Command("help"))
 async def help_commands(message:Message):
     await message.answer("Sizga qanday yordam kerak")
 
 
 
-#about commands
+
 @dp.message(Command("about"))
 async def about_commands(message:Message):
     await message.answer("Sifat 2024")
@@ -164,7 +164,7 @@ async def on_startup_notify(bot: Bot):
         except Exception as err:
             logging.exception(err)
 
-#bot ishga tushganini xabarini yuborish
+
 @dp.shutdown()
 async def off_startup_notify(bot: Bot):
     for admin in ADMINS:
@@ -175,10 +175,10 @@ async def off_startup_notify(bot: Bot):
 
 
 def setup_middlewares(dispatcher: Dispatcher, bot: Bot) -> None:
-    """MIDDLEWARE"""
+    
     from middlewares.throttling import ThrottlingMiddleware
 
-    # Spamdan himoya qilish uchun klassik ichki o'rta dastur. So'rovlar orasidagi asosiy vaqtlar 0,5 soniya
+    
     dispatcher.message.middleware(ThrottlingMiddleware(slow_mode_delay=0.5))
 
 
